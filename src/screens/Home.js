@@ -5,6 +5,7 @@ import getTheme from '../../native-base-theme/components'
 import material from '../../native-base-theme/variables/material';
 import FoodCard from "../components/FoodCard";
 import {BASE_URL,API_KEY}  from '../Constants'
+import ProgressBar from "../components/ProgressBar";
 
 const axios=require('axios')
 export default class Home extends Component
@@ -31,6 +32,7 @@ export default class Home extends Component
   }
     async loadRestaurants(keyword)
     {
+      this.setState({isLoading:true})
       try{
        let finalUrl=BASE_URL+"?q="+keyword
        const response=await axios.get(finalUrl,{"headers":{"user-key":API_KEY}}).then((response)=>{
@@ -44,16 +46,19 @@ export default class Home extends Component
       {
         console.error(error)
       }
-     
+    }
+    onNewKeyword=(keyword)=>
+    {
+      this.loadRestaurants(keyword)
     }
     render()
     {
       return(
       <Container>
-       <MasterToolbar searchToggle={this.searchToggle} searchStatus={this.searchStatus}/>
+       <MasterToolbar searchToggle={this.searchToggle} searchStatus={this.searchStatus} onNewKeyword={this.onNewKeyword}/>
        <Content>
        {
-       this.state.isLoading?<Text style={styles.info}>Nothing to display</Text>:<FlatList
+       this.state.isLoading?<ProgressBar/>:<FlatList
          data={this.state.restaurants} 
          renderItem={({item})=><FoodCard restaurant={item.restaurant}/>}
          keyExtractor={(item,index)=>index}
@@ -65,7 +70,7 @@ export default class Home extends Component
     }
 }
 const MasterToolbar=(props)=>{
-
+  this.keyInput=""
   return(
   <StyleProvider style={getTheme(material)}>
   <Header style={{ backgroundColor: '#cb202d'}} androidStatusBarColor="#D50000" searchBar rounded>
@@ -77,9 +82,18 @@ const MasterToolbar=(props)=>{
       </Body>
       <Right>
       <Button transparent onPress={props.searchToggle}>
-      <InputGroup transparent underline="false">
+      <InputGroup transparent >
         {
-          props.searchStatus&&<Input style={{color:"#dcd9c9",textShadowColor:"#dcd9c9"}} placeholder='Search' />
+          props.searchStatus&&<Input style={{color:"#dcd9c9",textShadowColor:"#dcd9c9"}} placeholder='Search'
+          numberOfLines={1}
+          defaultValue=""
+          onChangeText={(text)=>{this.keyInput=text}}
+          onSubmitEditing={(event)=>{
+            props.searchToggle()
+            props.onNewKeyword(this.keyInput)
+            }
+        } 
+      />
         }
         <Icon name='ios-search' style={{fontSize: 20, color: 'white'}} />
        </InputGroup>

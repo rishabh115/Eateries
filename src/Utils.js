@@ -3,7 +3,6 @@ import {COLORS} from './Constants'
 
 export const mapValToColor=(val)=>{
 let value=Math.round(Number(val)*10.0);
-console.log(value)
 if(value>=0 && value<10)
   return COLORS[0];
 else if(value>=10 && value<20)
