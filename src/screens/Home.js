@@ -18,25 +18,26 @@ export default class Home extends Component
   {
     super(props)
     this.searchStatus=false
+    this.isCancelled=false
     this.searchToggle.bind(this)
   }
   
-  componentWillMount()
+  componentDidMount()
   {
     this.loadRestaurants("delhi");
   }
   searchToggle=()=>{
     const currentStatus=this.searchStatus
     this.searchStatus=!currentStatus
-    this.forceUpdate()
+    !this.isCancelled&&this.forceUpdate()
   }
     async loadRestaurants(keyword)
     {
-      this.setState({isLoading:true})
+      !this.isCancelled&&this.setState({isLoading:true})
       try{
        let finalUrl=BASE_URL+"?q="+keyword
        const response=await axios.get(finalUrl,{"headers":{"user-key":API_KEY}}).then((response)=>{
-         this.setState({
+         !this.isCancelled&&this.setState({
            restaurants:response.data.restaurants,
            isLoading:false
          })
@@ -50,6 +51,10 @@ export default class Home extends Component
     onNewKeyword=(keyword)=>
     {
       this.loadRestaurants(keyword)
+    }
+    componentWillUnmount()
+    {
+      this.isCancelled=true
     }
     render()
     {
