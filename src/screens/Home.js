@@ -58,8 +58,8 @@ export default class Home extends Component
        <MasterToolbar searchToggle={this.searchToggle} searchStatus={this.searchStatus} onNewKeyword={this.onNewKeyword}/>
        <Content>
        {
-       this.state.isLoading?<ProgressBar/>:<FlatList
-         data={this.state.restaurants} 
+       this.state.isLoading?
+       <ProgressBar/>:<FlatList data={this.state.restaurants} 
          renderItem={({item})=><FoodCard restaurant={item.restaurant}/>}
          keyExtractor={(item,index)=>index}
        />
